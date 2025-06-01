@@ -393,10 +393,57 @@
 .loading-text.active {
   display: block;
 }
+
+/* Connection Status */
+.connection-status {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transform: translateX(150%);
+  transition: transform 0.3s ease;
+}
+
+.connection-status.show {
+  transform: translateX(0);
+}
+
+.connection-status.success {
+  border-left: 4px solid #10B981;
+}
+
+.connection-status.error {
+  border-left: 4px solid #EF4444;
+}
+
+.connection-status i {
+  font-size: 18px;
+}
+
+.connection-status.success i {
+  color: #10B981;
+}
+
+.connection-status.error i {
+  color: #EF4444;
+}
     </style>
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-6">
+    <!-- Connection Status Indicator -->
+    <div class="connection-status" id="connectionStatus">
+        <i class="fas fa-check-circle"></i>
+        <span id="statusMessage">เชื่อมต่อ API สำเร็จ</span>
+    </div>
+
     <div class="profile-card max-w-md w-full text-slate-800 p-8">
         <h2 class="text-xl font-bold text-center mb-6 text-orange-600">ข้อมูลสมาชิก</h2>
         <form id="edit-form">
@@ -505,6 +552,8 @@
         const loadingTitle = document.getElementById('loadingTitle');
         const loadingText = document.getElementById('loadingText');
         const uploadStatus = document.getElementById('upload-status');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const statusMessage = document.getElementById('statusMessage');
 
         // Modal Event Listeners
         modalCloseBtn.addEventListener('click', () => {
@@ -531,12 +580,16 @@
         // ฟังก์ชันสำหรับเริ่มต้น LIFF
         async function initializeLiff() {
             try {
+                // Show LINE connection status
+                showConnectionStatus('กำลังเชื่อมต่อกับ LINE...', false);
+                
                 loadingTitle.textContent = "กำลังเชื่อมต่อกับ LINE";
                 loadingText.textContent = "กรุณารอสักครู่...";
                 loadingModal.classList.add('active');
                 
                 await liff.init({ liffId: `${LIFF_ID}` });
                 if (liff.isLoggedIn()) {
+                    showConnectionStatus('เชื่อมต่อ LINE สำเร็จ', true);
                     const profile = await liff.getProfile();
                     const userlineId = profile.userId; // ดึง userId จากโปรไฟล์
                     searchDataByUserlineId(userlineId); // ค้นหาข้อมูลตาม userId
@@ -545,16 +598,35 @@
                 }
             } catch (error) {
                 console.error('LIFF Initialization failed', error);
+                showConnectionStatus('เชื่อมต่อ LINE ล้มเหลว', false);
                 showError('เกิดข้อผิดพลาดในการเชื่อมต่อ LINE');
             } finally {
                 loadingModal.classList.remove('active');
             }
         }
 
+        // ฟังก์ชันแสดงสถานะการเชื่อมต่อ
+        function showConnectionStatus(message, isSuccess) {
+            connectionStatus.className = 'connection-status';
+            connectionStatus.classList.add(isSuccess ? 'success' : 'error');
+            if (!isSuccess) {
+                connectionStatus.querySelector('i').className = 'fas fa-times-circle';
+            } else {
+                connectionStatus.querySelector('i').className = 'fas fa-check-circle';
+            }
+            statusMessage.textContent = message;
+            connectionStatus.classList.add('show');
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                connectionStatus.classList.remove('show');
+            }, 3000);
+        }
+
         // ฟังก์ชันค้นหาข้อมูลตาม userlineId
         async function searchDataByUserlineId(userlineId) {
             loadingTitle.textContent = "กำลังประมวลผล";
-            loadingText.textContent = "เชื่อมต่อ API สำเร็จ ระบบกำลังแสดงข้อมูลของคุณ...";
+            loadingText.textContent = "กำลังโหลดข้อมูลสมาชิก...";
             loadingModal.classList.add('active');
             
             try {
@@ -576,11 +648,15 @@
                     document.getElementById('edit-imageUrl').value = filteredData[5] || "";
 
                     updateImagePreview(); // อัปเดตการแสดงผลของรูปภาพ
+                    
+                    // Show API connection success
+                    showConnectionStatus('เชื่อมต่อ API สำเร็จ ระบบแสดงข้อมูลของคุณแล้ว', true);
                 } else {
                     showError('ไม่พบข้อมูลสมาชิกที่ตรงกับบัญชี LINE ของคุณ');
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
+                showConnectionStatus('เชื่อมต่อ API ล้มเหลว', false);
                 showError('เกิดข้อผิดพลาดขณะโหลดข้อมูล');
             } finally {
                 loadingModal.classList.remove('active');
