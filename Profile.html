@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรไฟล์สมาชิก </title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- LIFF SDK -->
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Fontawesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"/>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+        
+        :root {
+            --primary-color: #FF5F1F;
+            --primary-light: #FF8C42;
+            --primary-dark: #E64900;
+            --secondary-color: #FFD166;
+            --dark-color: #2F2F2F;
+            --light-color: #FFF8F0;
+        }
+        
+        body {
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(135deg, var(--light-color) 0%, #FFEDE1 100%);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .modal-box {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+        
+        .modal-icon {
+            font-size: 70px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+        
+        .modal-text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-btn-primary {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .modal-btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .modal-btn-secondary {
+            background: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .modal-btn-secondary:hover {
+            background: #FFF0E6;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 95, 31, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 95, 31, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #FFF0E6;
+            transform: translateY(-2px);
+        }
+        
+        .input-field:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(255, 95, 31, 0.2);
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(255, 95, 31, 0.1);
+            border: 1px solid rgba(255, 95, 31, 0.2);
+        }
+        
+        .profile-image-container {
+            border: 2px dashed rgba(255, 95, 31, 0.3);
+            background: rgba(255, 95, 31, 0.05);
+        }
+/* สไตล์พื้นฐานสำหรับอัพโหลดไฟล์ */
+.file-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.file-upload-label {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 300px;
+  height: 200px;
+  border: 2px dashed #FF8C42;
+  border-radius: 16px;
+  background-color: rgba(255, 140, 66, 0.05);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.file-upload-label:hover {
+  border-color: #FF5F1F;
+  background-color: rgba(255, 140, 66, 0.1);
+  transform: translateY(-2px);
+}
+
+.file-upload-label.drag-over {
+  border-color: #E64900;
+  background-color: rgba(230, 73, 0, 0.1);
+}
+
+.file-upload-icon {
+  font-size: 48px;
+  color: #FF5F1F;
+  margin-bottom: 12px;
+}
+
+.file-upload-text {
+  text-align: center;
+  color: #FF5F1F;
+  font-weight: 500;
+}
+
+.file-upload-text span {
+  font-size: 14px;
+  color: #FF8C42;
+  display: block;
+  margin-top: 8px;
+}
+
+.file-upload-input {
+  display: none;
+}
+
+.file-upload-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+.file-upload-label.has-file .file-upload-preview {
+  display: block;
+}
+
+.file-upload-label.has-file .file-upload-icon,
+.file-upload-label.has-file .file-upload-text {
+  display: none;
+}
+
+.file-upload-button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #FF5F1F 0%, #FF8C42 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 95, 31, 0.3);
+}
+
+.file-upload-button:hover {
+  background: linear-gradient(135deg, #E64900 0%, #FF5F1F 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 95, 31, 0.4);
+}
+
+.file-info {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #FF5F1F;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-info i {
+  font-size: 18px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: #f0f0f0;
+  border-radius: 3px;
+  margin-top: 10px;
+  overflow: hidden;
+  display: none;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FF8C42, #FF5F1F);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* สไตล์สำหรับอัพโหลดไฟล์แบบเล็ก */
+.file-upload-sm {
+  max-width: 150px;
+  height: 150px;
+}
+
+.file-upload-sm .file-upload-icon {
+  font-size: 36px;
+}
+
+.file-upload-sm .file-upload-text {
+  font-size: 14px;
+}
+
+.file-upload-sm .file-upload-text span {
+  font-size: 12px;
+}
+
+/* สไตล์สำหรับอัพโหลดหลายไฟล์ */
+.multi-file-upload {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.file-item {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.file-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.file-item-remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FF5F1F;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.file-item:hover .file-item-remove {
+  opacity: 1;
+}
+
+/* New Upload Button Styles */
+.upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.upload-btn {
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  background-color: white;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-btn:hover {
+  background-color: #FFF0E6;
+}
+
+.upload-btn-wrapper input[type=file] {
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+
+/* Loading States */
+.loading-text {
+  display: none;
+  color: var(--primary-color);
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+.loading-text.active {
+  display: block;
+}
+
+/* Connection Status */
+.connection-status {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transform: translateX(150%);
+  transition: transform 0.3s ease;
+}
+
+.connection-status.show {
+  transform: translateX(0);
+}
+
+.connection-status.success {
+  border-left: 4px solid #10B981;
+}
+
+.connection-status.error {
+  border-left: 4px solid #EF4444;
+}
+
+.connection-status i {
+  font-size: 18px;
+}
+
+.connection-status.success i {
+  color: #10B981;
+}
+
+.connection-status.error i {
+  color: #EF4444;
+}
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-6">
+    <!-- Connection Status Indicator -->
+    <div class="connection-status" id="connectionStatus">
+        <i class="fas fa-check-circle"></i>
+        <span id="statusMessage">เชื่อมต่อ API สำเร็จ</span>
+    </div>
+
+    <div class="profile-card max-w-md w-full text-slate-800 p-8">
+        <h2 class="text-xl font-bold text-center mb-6 text-orange-600">ข้อมูลสมาชิก</h2>
+        <form id="edit-form">
+            <input type="hidden" id="edit-id">
+            <input type="hidden" id="edit-imageUrl">
+            <div class="mb-4 hidden">
+                <label for="edit-userID" class="block text-sm text-orange-700">UserID</label>
+                <input type="text" id="edit-userID" class="input-field w-full bg-orange-50 p-3 rounded-lg" disabled>
+            </div>
+            
+            <div class="mb-6 flex flex-col items-center">
+                <div class="profile-image-container w-32 h-32 mb-4 rounded-full relative overflow-hidden">
+                    <img id="image-preview" 
+                         src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                         alt="Image Preview" class="w-full h-full object-cover">
+                </div>
+                <div class="mb-4 hidden" id="image-upload-section">
+                    <div class="upload-btn-wrapper">
+                        <button class="upload-btn"><i class="fas fa-upload mr-2"></i>อัปโหลดรูปโปรไฟล์</button>
+                        <input type="file" id="edit-image" accept="image/*">
+                    </div>
+                    <div id="upload-status" class="loading-text">
+                        <i class="fas fa-circle-notch fa-spin mr-2"></i>
+                        <span>กำลังอัปโหลด...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label for="edit-name" class="block text-sm text-orange-700">ชื่อ-นามสกุล</label>
+                <input type="text" id="edit-name" class="input-field w-full border border-orange-200 p-3 rounded-lg" disabled>
+            </div>
+            
+            <div class="mb-4">
+                <label for="edit-employeeID" class="block text-sm text-orange-700">Gmail ที่ติดต่อได้</label>
+                <input type="email" id="edit-employeeID" class="input-field w-full border border-orange-200 p-3 rounded-lg" disabled>
+            </div>
+            
+            <div class="mb-6">
+                <label for="edit-department" class="block text-sm text-orange-700">หมายเลขโทรศัพท์</label>
+                <input type="number" id="edit-department" class="input-field w-full border border-orange-200 p-3 rounded-lg" disabled>
+            </div>
+            
+            <div class="flex justify-end gap-2">
+                <button type="button" id="edit-button" class="btn-primary py-2 px-4 rounded-lg">
+                    <i class="fas fa-edit mr-2"></i>แก้ไขข้อมูล
+                </button>
+                <button type="button" class="btn-secondary py-2 px-4 rounded-lg hidden" onclick="cancelEdit()">
+                    ยกเลิก
+                </button>
+                <button type="submit" class="btn-primary py-2 px-4 rounded-lg hidden">
+                    <i class="fas fa-save mr-2"></i>อัพเดทข้อมูล
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal Success -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-box">
+            <i class="fas fa-check-circle modal-icon"></i>
+            <h2 class="modal-title">Update Succes!</h2>
+            <p class="modal-text">ระบบแก้ไขข้อมูลเป็นปัจจุบันแล้วค่ะ</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-primary" id="modalCloseBtn">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Error -->
+    <div class="modal-overlay" id="errorModal">
+        <div class="modal-box">
+            <i class="fas fa-exclamation-circle modal-icon" style="color: #ef4444;"></i>
+            <h2 class="modal-title">Error</h2>
+            <p class="modal-text" id="errorMessage">กรุณากรอกข้อมูลให้ครบค่ะ!</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-primary" id="errorCloseBtn">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Loading -->
+    <div class="modal-overlay" id="loadingModal">
+        <div class="modal-box">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500 mx-auto mb-4"></div>
+            <h2 class="modal-title" id="loadingTitle">กำลังประมวลผล</h2>
+            <p class="modal-text" id="loadingText">กรุณารอสักครู่...</p>
+        </div>
+    </div>
+
+    <script>
+        // ลิ้งจาก ระบบสมาชิก
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzITShrral1a1NkOPtpwCzawcDMWemGPWKwQom60S1u5VIA4XnZF7-xF38BjY2GU1DEsA/exec'; 
+        // Liff ไอดีไล์เรียกใช้หน้าข้อมูลส่วนตัว
+        const LIFF_ID = '2007510868-lV0Z34pa'; // LIFF ID
+
+        let latestData = {};
+
+        // DOM Elements
+        const successModal = document.getElementById('successModal');
+        const errorModal = document.getElementById('errorModal');
+        const loadingModal = document.getElementById('loadingModal');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const errorCloseBtn = document.getElementById('errorCloseBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const loadingTitle = document.getElementById('loadingTitle');
+        const loadingText = document.getElementById('loadingText');
+        const uploadStatus = document.getElementById('upload-status');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const statusMessage = document.getElementById('statusMessage');
+
+        // Modal Event Listeners
+        modalCloseBtn.addEventListener('click', () => {
+            successModal.classList.remove('active');
+        });
+
+        errorCloseBtn.addEventListener('click', () => {
+            errorModal.classList.remove('active');
+        });
+
+        // เริ่มต้นด้วยการล็อกฟอร์มและซ่อนปุ่ม
+        window.onload = async () => {
+            await initializeLiff(); // เริ่มต้น LIFF และค้นหาข้อมูลทันทีที่ได้ userId
+            toggleFormEditing(false); // ล็อกฟอร์มในตอนเริ่มต้นและซ่อนปุ่ม
+            
+            // Event listener for file upload
+            document.getElementById('edit-image').addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    handleImageUpload(e.target.files[0]);
+                }
+            });
+        };
+
+        // ฟังก์ชันสำหรับเริ่มต้น LIFF
+        async function initializeLiff() {
+            try {
+                // Show LINE connection status
+                showConnectionStatus('กำลังเชื่อมต่อกับ LINE...', false);
+                
+                loadingTitle.textContent = "กำลังเชื่อมต่อกับ LINE";
+                loadingText.textContent = "กรุณารอสักครู่...";
+                loadingModal.classList.add('active');
+                
+                await liff.init({ liffId: `${LIFF_ID}` });
+                if (liff.isLoggedIn()) {
+                    showConnectionStatus('เชื่อมต่อ LINE สำเร็จ', true);
+                    const profile = await liff.getProfile();
+                    const userlineId = profile.userId; // ดึง userId จากโปรไฟล์
+                    searchDataByUserlineId(userlineId); // ค้นหาข้อมูลตาม userId
+                } else {
+                    liff.login(); // ถ้ายังไม่ได้เข้าสู่ระบบ ให้เข้าสู่ระบบ
+                }
+            } catch (error) {
+                console.error('LIFF Initialization failed', error);
+                showConnectionStatus('เชื่อมต่อ LINE ล้มเหลว', false);
+                showError('เกิดข้อผิดพลาดในการเชื่อมต่อ LINE');
+            } finally {
+                loadingModal.classList.remove('active');
+            }
+        }
+
+        // ฟังก์ชันแสดงสถานะการเชื่อมต่อ
+        function showConnectionStatus(message, isSuccess) {
+            connectionStatus.className = 'connection-status';
+            connectionStatus.classList.add(isSuccess ? 'success' : 'error');
+            if (!isSuccess) {
+                connectionStatus.querySelector('i').className = 'fas fa-times-circle';
+            } else {
+                connectionStatus.querySelector('i').className = 'fas fa-check-circle';
+            }
+            statusMessage.textContent = message;
+            connectionStatus.classList.add('show');
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                connectionStatus.classList.remove('show');
+            }, 3000);
+        }
+
+        // ฟังก์ชันค้นหาข้อมูลตาม userlineId
+        async function searchDataByUserlineId(userlineId) {
+            loadingTitle.textContent = "Processing";
+            loadingText.textContent = "กำลังโหลดข้อมูลสมาชิก...";
+            loadingModal.classList.add('active');
+            
+            try {
+                const response = await fetch(WEB_APP_URL);
+                const data = await response.json();
+
+                // ค้นหาข้อมูลตาม userlineId
+                const filteredData = data.find(row => row[1] === userlineId);
+
+                if (filteredData) {
+                    latestData = filteredData;
+
+                    // กรอกข้อมูลลงในฟอร์ม
+                    document.getElementById('edit-id').value = filteredData[0];
+                    document.getElementById('edit-userID').value = filteredData[1];
+                    document.getElementById('edit-name').value = filteredData[2];
+                    document.getElementById('edit-employeeID').value = filteredData[3];
+                    document.getElementById('edit-department').value = filteredData[4];
+                    document.getElementById('edit-imageUrl').value = filteredData[5] || "";
+
+                    updateImagePreview(); // อัปเดตการแสดงผลของรูปภาพ
+                    
+                    // Show API connection success
+                    showConnectionStatus('เชื่อมต่อ API สำเร็จ ระบบแสดงข้อมูลของคุณแล้ว', true);
+                } else {
+                    showError('ไม่พบข้อมูลสมาชิกที่ตรงกับบัญชี LINE ของคุณ');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showConnectionStatus('เชื่อมต่อ API ล้มเหลว', false);
+                showError('เกิดข้อผิดพลาดขณะโหลดข้อมูล');
+            } finally {
+                loadingModal.classList.remove('active');
+            }
+        }
+
+        // ฟังก์ชันสำหรับล็อกหรือปลดล็อกฟอร์มและจัดการการแสดงผลปุ่ม
+        function toggleFormEditing(enable) {
+            const inputs = document.querySelectorAll('#edit-form input:not([type="hidden"])');
+            const saveButton = document.querySelector('#edit-form button[type="submit"]');
+            const cancelButton = document.querySelector('#edit-form button[type="button"]:not(#edit-button)');
+            const imageUploadSection = document.getElementById('image-upload-section');
+
+            inputs.forEach(input => {
+                input.disabled = !enable;
+            });
+
+            if (enable) {
+                saveButton.classList.remove('hidden');
+                cancelButton.classList.remove('hidden');
+                imageUploadSection.classList.remove('hidden');
+                document.getElementById('edit-button').classList.add('hidden');
+            } else {
+                saveButton.classList.add('hidden');
+                cancelButton.classList.add('hidden');
+                imageUploadSection.classList.add('hidden');
+                document.getElementById('edit-button').classList.remove('hidden');
+            }
+        }
+
+        // เพิ่ม event listener สำหรับปุ่มแก้ไขข้อมูล
+        document.getElementById('edit-button').addEventListener('click', function () {
+            toggleFormEditing(true);
+        });
+
+        // ฟังก์ชันสำหรับอัปเดตการแสดงผลของรูปภาพตาม URL ที่ป้อน
+        function updateImagePreview() {
+            const imageUrl = document.getElementById('edit-imageUrl').value;
+            const imagePreview = document.getElementById('image-preview');
+            imagePreview.src = imageUrl || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+        }
+
+        // ฟังก์ชันสำหรับส่งฟอร์มและบันทึกข้อมูล
+        document.getElementById('edit-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const id = document.getElementById('edit-id').value;
+            const userID = document.getElementById('edit-userID').value;
+            const name = document.getElementById('edit-name').value;
+            const employeeID = document.getElementById('edit-employeeID').value;
+            const department = document.getElementById('edit-department').value;
+            const imageFile = document.getElementById('edit-image').files[0];
+
+            let imageUrl = document.getElementById('edit-imageUrl').value;
+
+            // ตรวจสอบความถูกต้องของข้อมูล
+            if (!name || !employeeID || !department) {
+                showError('กรุณากรอกข้อมูลให้ครบถ้วน');
+                return;
+            }
+
+            loadingTitle.textContent = "Processing";
+            loadingText.textContent = "กำลังตรวจสอบข้อมูลในระบบ...";
+            loadingModal.classList.add('active');
+
+            try {
+                let result;
+                if (imageFile) {
+                    const base64Image = await getBase64(imageFile);
+                    result = await updateData(id, userID, name, employeeID, department, base64Image);
+                } else {
+                    result = await updateData(id, userID, name, employeeID, department, imageUrl);
+                }
+
+                if (result && result.includes('Data updated')) {
+                    successModal.classList.add('active');
+                    // อัปเดตข้อมูลในฟอร์มหลังจากบันทึกข้อมูลสำเร็จ
+                    loadingTitle.textContent = "กำลังโหลดข้อมูลใหม่";
+                    loadingText.textContent = "ระบบกำลังอัปเดตข้อมูล...";
+                    await searchDataByUserlineId(userID);
+                } else {
+                    throw new Error(result || 'Failed to save data');
+                }
+            } catch (error) {
+                console.error('Error saving data:', error);
+                showError('เกิดข้อผิดพลาดขณะบันทึกข้อมูล');
+            } finally {
+                loadingModal.classList.remove('active');
+                cancelEdit();
+            }
+        });
+
+        // ฟังก์ชันยกเลิกการแก้ไขและรีเซ็ตฟอร์ม
+        function cancelEdit() {
+            document.getElementById('edit-form').reset();
+            document.getElementById('edit-id').value = latestData[0];
+            document.getElementById('edit-userID').value = latestData[1];
+            document.getElementById('edit-name').value = latestData[2];
+            document.getElementById('edit-employeeID').value = latestData[3];
+            document.getElementById('edit-department').value = latestData[4];
+            document.getElementById('edit-imageUrl').value = latestData[5] || "";
+
+            updateImagePreview();
+            toggleFormEditing(false);
+        }
+
+        // ฟังก์ชันสำหรับอัปเดตข้อมูลไปยังเซิร์ฟเวอร์
+        async function updateData(id, userID, name, employeeID, department, base64Image) {
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `method=updateData&id=${id}&userID=${encodeURIComponent(userID)}&name=${encodeURIComponent(name)}&employeeID=${encodeURIComponent(employeeID)}&department=${encodeURIComponent(department)}&imageUrl=${encodeURIComponent(base64Image)}`
+            });
+            return await response.text();
+        }
+
+        // ฟังก์ชันสำหรับแปลงไฟล์เป็น Base64
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                let reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ฟังก์ชันแสดงข้อผิดพลาด
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorModal.classList.add('active');
+        }
+
+        // Handle image upload
+        async function handleImageUpload(file) {
+            uploadStatus.classList.add('active');
+            
+            try {
+                const base64Image = await getBase64(file);
+                document.getElementById('edit-imageUrl').value = base64Image;
+                updateImagePreview();
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                showError('เกิดข้อผิดพลาดขณะอัปโหลดรูปภาพ');
+            } finally {
+                uploadStatus.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>
