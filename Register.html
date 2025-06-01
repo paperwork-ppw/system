@@ -284,15 +284,16 @@
             altText: 'ลงทะเบียนเรียบร้อย',
             contents: {
                 type: 'bubble',
+                size: 'giga',
                 styles: {
                     header: {
-                        backgroundColor: '#f0f0f0'
+                        backgroundColor: '#FF5F1F'
                     },
                     footer: {
-                        backgroundColor: '#f0f0f0'
+                        backgroundColor: '#FFF8F0'
                     },
                     body: {
-                        backgroundColor: '#ffffff'
+                        backgroundColor: '#FFFFFF'
                     }
                 },
                 header: {
@@ -301,103 +302,148 @@
                     contents: [
                         {
                             type: 'text',
-                            text: 'ข้อมูลลงทะเบียนสำเร็จ',
+                            text: '📝 ข้อมูลสมาชิก',
                             weight: 'bold',
                             size: 'lg',
-                            color: '#000000',
+                            color: '#FFFFFF',
                             align: 'center'
                         }
-                    ]
+                    ],
+                    paddingAll: '20px'
                 },
                 body: {
                     type: 'box',
                     layout: 'vertical',
+                    spacing: 'md',
                     contents: [
+                        {
+                            type: 'separator',
+                            color: '#FF9966'
+                        },
                         {
                             type: 'box',
                             layout: 'vertical',
-                            margin: 'lg',
                             spacing: 'sm',
+                            margin: 'lg',
                             contents: [
                                 {
                                     type: 'box',
-                                    layout: 'horizontal',
+                                    layout: 'baseline',
                                     contents: [
                                         {
                                             type: 'text',
-                                            text: 'ชื่อ-สกุล',
-                                            size: 'sm',
-                                            color: '#555555',
-                                            flex: 1
+                                            text: 'Name:',
+                                            size: 'md',
+                                            weight: 'bold',
+                                            color: '#FF5F1F',
+                                            flex: 2
                                         },
                                         {
                                             type: 'text',
                                             text: document.getElementById('nameId').value,
-                                            size: 'sm',
+                                            size: 'md',
                                             color: '#111111',
-                                            align: 'end',
-                                            flex: 2
+                                            flex: 4
                                         }
                                     ]
                                 },
                                 {
                                     type: 'box',
-                                    layout: 'horizontal',
+                                    layout: 'baseline',
                                     contents: [
                                         {
                                             type: 'text',
-                                            text: 'รหัสพนักงาน',
-                                            size: 'sm',
-                                            color: '#555555',
-                                            flex: 1
+                                            text: 'Gmail:',
+                                            size: 'md',
+                                            weight: 'bold',
+                                            color: '#FF5F1F',
+                                            flex: 2
                                         },
                                         {
                                             type: 'text',
                                             text: document.getElementById('keynumberId').value,
-                                            size: 'sm',
+                                            size: 'md',
                                             color: '#111111',
-                                            align: 'end',
-                                            flex: 2
+                                            flex: 4
                                         }
                                     ]
                                 },
                                 {
                                     type: 'box',
-                                    layout: 'horizontal',
+                                    layout: 'baseline',
                                     contents: [
                                         {
                                             type: 'text',
-                                            text: 'อีเมล',
-                                            size: 'sm',
-                                            color: '#555555',
-                                            flex: 1
+                                            text: 'Phone:',
+                                            size: 'md',
+                                            weight: 'bold',
+                                            color: '#FF5F1F',
+                                            flex: 2
                                         },
                                         {
                                             type: 'text',
                                             text: document.getElementById('keynumber2Id').value,
-                                            size: 'sm',
+                                            size: 'md',
                                             color: '#111111',
-                                            align: 'end',
+                                            flex: 4
+                                        }
+                                    ]
+                                },
+                                {
+                                    type: 'box',
+                                    layout: 'baseline',
+                                    contents: [
+                                        {
+                                            type: 'text',
+                                            text: 'Date:',
+                                            size: 'md',
+                                            weight: 'bold',
+                                            color: '#FF5F1F',
                                             flex: 2
+                                        },
+                                        {
+                                            type: 'text',
+                                            text: new Date().toLocaleDateString('th-TH', { 
+                                                day: 'numeric', 
+                                                month: 'short', 
+                                                year: 'numeric' 
+                                            }),
+                                            size: 'md',
+                                            color: '#111111',
+                                            flex: 4
                                         }
                                     ]
                                 }
                             ]
+                        },
+                        {
+                            type: 'text',
+                            text: 'หมายเหตุ: หากข้อมูลไม่ถูกต้อง กรุณาแก้ไขข้อมูลที่ปุ่มด้านล่างค่ะ',
+                            size: 'sm',
+                            color: '#FF5F1F',
+                            align: 'center',
+                            margin: 'md'
                         }
                     ]
                 },
                 footer: {
                     type: 'box',
                     layout: 'vertical',
+                    spacing: 'sm',
                     contents: [
                         {
-                            type: 'text',
-                            text: 'ยินดีต้อนรับ!',
-                            size: 'sm',
-                            color: '#aaaaaa',
-                            align: 'center'
+                            type: 'button',
+                            style: 'primary',
+                            color: '#FF5F1F',
+                            action: {
+                                type: 'uri',
+                                label: 'แก้ไขข้อมูล',
+                                uri: 'https://liff.line.me/2007510868-lV0Z34pa'
+                            },
+                            height: 'sm'
                         }
-                    ]
+                    ],
+                    paddingAll: '20px'
                 }
             }
         };
