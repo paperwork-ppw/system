@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile โปรไฟล์สมาชิก</title>
+    <title>โปรไฟล์สมาชิก</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- LIFF SDK -->
@@ -505,10 +504,10 @@
     <div class="modal-overlay" id="successModal">
         <div class="modal-box">
             <i class="fas fa-check-circle modal-icon"></i>
-            <h2 class="modal-title">Success!</h2>
-            <p class="modal-text">แก้ไขข้อมูลเป็นปัจจุบันสำเร็จ!</p>
+            <h2 class="modal-title">Update Succes!</h2>
+            <p class="modal-text">ระบบแก้ไขข้อมูลเป็นปัจจุบันแล้วค่ะ</p>
             <div class="modal-buttons">
-                <button class="modal-btn modal-btn-primary" id="modalCloseBtn">ตกลง</button>
+                <button class="modal-btn modal-btn-primary" id="modalCloseBtn">ปิด</button>
             </div>
         </div>
     </div>
@@ -517,7 +516,7 @@
     <div class="modal-overlay" id="errorModal">
         <div class="modal-box">
             <i class="fas fa-exclamation-circle modal-icon" style="color: #ef4444;"></i>
-            <h2 class="modal-title">Error!</h2>
+            <h2 class="modal-title">Error</h2>
             <p class="modal-text" id="errorMessage">กรุณากรอกข้อมูลให้ครบค่ะ!</p>
             <div class="modal-buttons">
                 <button class="modal-btn modal-btn-primary" id="errorCloseBtn">ปิด</button>
@@ -529,7 +528,7 @@
     <div class="modal-overlay" id="loadingModal">
         <div class="modal-box">
             <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500 mx-auto mb-4"></div>
-            <h2 class="modal-title" id="loadingTitle">Processing</h2>
+            <h2 class="modal-title" id="loadingTitle">กำลังประมวลผล</h2>
             <p class="modal-text" id="loadingText">กรุณารอสักครู่...</p>
         </div>
     </div>
@@ -581,7 +580,7 @@
         async function initializeLiff() {
             try {
                 // Show LINE connection status
-                showConnectionStatus('กำลังเชื่อมต่อกับ LINE...', error);
+                showConnectionStatus('กำลังเชื่อมต่อกับ LINE...', false);
                 
                 loadingTitle.textContent = "กำลังเชื่อมต่อกับ LINE";
                 loadingText.textContent = "กรุณารอสักครู่...";
@@ -719,7 +718,7 @@
             }
 
             loadingTitle.textContent = "Processing";
-            loadingText.textContent = "กำลังตรวจสอบข้อมูล...";
+            loadingText.textContent = "กำลังตรวจสอบข้อมูลในระบบ...";
             loadingModal.classList.add('active');
 
             try {
