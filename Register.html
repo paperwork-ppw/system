@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ลงทะเบียน</title>
+    <title>Register ลงทะเบียน</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
@@ -192,7 +192,7 @@
                 </div>
                 
                 <button type="button" id="submitBtn" class="btn-primary text-center w-full text-white py-3 px-4 rounded-lg mt-6">
-                    <i class="fas fa-save mr-2"></i>บันทึกข้อมูล
+                    <i class="fas fa-user mr-2"></i>Register
                 </button>
             </div>
         </form>
@@ -202,10 +202,10 @@
     <div class="modal-overlay" id="successModal">
         <div class="modal-box">
             <i class="fas fa-check-circle modal-icon"></i>
-            <h2 class="modal-title">ลงทะเบียนสำเร็จ!</h2>
-            <p class="modal-text">ข้อมูลของคุณถูกบันทึกเรียบร้อยแล้ว</p>
+            <h2 class="modal-title">Success!</h2>
+            <p class="modal-text">สมัครสมาชิกเรียบร้อยแล้ว</p>
             <div class="modal-buttons">
-                <button class="modal-btn modal-btn-primary" id="modalCloseBtn">ปิด</button>
+                <button class="modal-btn modal-btn-primary" id="modalCloseBtn">ตกลง</button>
             </div>
         </div>
     </div>
@@ -215,7 +215,7 @@
         <div class="modal-box">
             <i class="fas fa-exclamation-circle modal-icon" style="color: #ef4444;"></i>
             <h2 class="modal-title">เกิดข้อผิดพลาด</h2>
-            <p class="modal-text" id="errorMessage">กรุณากรอกข้อมูลในช่องที่จำเป็น</p>
+            <p class="modal-text" id="errorMessage">กรอกข้อมูลไม่ครบ! ( 401 )</p>
             <div class="modal-buttons">
                 <button class="modal-btn modal-btn-primary" id="errorCloseBtn">ปิด</button>
             </div>
@@ -226,11 +226,11 @@
     <div class="modal-overlay" id="confirmModal">
         <div class="modal-box">
             <i class="fas fa-question-circle modal-icon" style="color: var(--primary-color);"></i>
-            <h2 class="modal-title">ยืนยันการส่งข้อมูล</h2>
-            <p class="modal-text">คุณแน่ใจว่าต้องการส่งข้อมูลนี้หรือไม่?</p>
+            <h2 class="modal-title">Confirm</h2>
+            <p class="modal-text">คุณแน่ใจว่าต้องการสมัครสมาชิกนี้หรือไม่?</p>
             <div class="modal-buttons">
                 <button class="modal-btn modal-btn-secondary" id="confirmCancelBtn">ยกเลิก</button>
-                <button class="modal-btn modal-btn-primary" id="confirmSubmitBtn">ยืนยัน</button>
+                <button class="modal-btn modal-btn-primary" id="confirmSubmitBtn">สมัคร</button>
             </div>
         </div>
     </div>
@@ -239,7 +239,7 @@
     <div class="modal-overlay" id="loadingModal">
         <div class="modal-box">
             <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500 mx-auto mb-4"></div>
-            <h2 class="modal-title">กำลังประมวลผล</h2>
+            <h2 class="modal-title">Proseccessing</h2>
             <p class="modal-text">กรุณารอสักครู่...</p>
         </div>
     </div>
@@ -418,7 +418,7 @@
                         },
                         {
                             type: 'text',
-                            text: 'หมายเหตุ: หากข้อมูลไม่ถูกต้อง กรุณาแก้ไขข้อมูลที่ปุ่มด้านล่างค่ะ',
+                            text: 'หมายเหตุ: หากข้อมูลไม่ถูกต้อง คลิ๊กที่ปุ่มด้านล่างค่ะ',
                             size: 'sm',
                             color: '#FF5F1F',
                             align: 'center',
@@ -609,7 +609,7 @@
             console.log(data);
         } catch (error) {
             loadingModal.classList.remove('active');
-            showError('เกิดข้อผิดพลาดขณะส่งข้อมูล');
+            showError('เกิดข้อผิดพลาดขณะเชื่อมต่อ API');
             console.error(error);
         } finally {
             submitBtn.disabled = false;
