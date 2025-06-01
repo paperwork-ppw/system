@@ -349,6 +349,50 @@
 .file-item:hover .file-item-remove {
   opacity: 1;
 }
+
+/* New Upload Button Styles */
+.upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.upload-btn {
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  background-color: white;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-btn:hover {
+  background-color: #FFF0E6;
+}
+
+.upload-btn-wrapper input[type=file] {
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+
+/* Loading States */
+.loading-text {
+  display: none;
+  color: var(--primary-color);
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+.loading-text.active {
+  display: block;
+}
     </style>
 </head>
 
@@ -357,6 +401,7 @@
         <h2 class="text-xl font-bold text-center mb-6 text-orange-600">ข้อมูลสมาชิก</h2>
         <form id="edit-form">
             <input type="hidden" id="edit-id">
+            <input type="hidden" id="edit-imageUrl">
             <div class="mb-4 hidden">
                 <label for="edit-userID" class="block text-sm text-orange-700">UserID</label>
                 <input type="text" id="edit-userID" class="input-field w-full bg-orange-50 p-3 rounded-lg" disabled>
@@ -369,8 +414,14 @@
                          alt="Image Preview" class="w-full h-full object-cover">
                 </div>
                 <div class="mb-4 hidden" id="image-upload-section">
-                    <label for="edit-image" class="block text-sm text-orange-700">อัปโหลดรูปภาพ</label>
-                    <input type="file" id="edit-image" class="input-field w-full p-2 rounded-lg" disabled>
+                    <div class="upload-btn-wrapper">
+                        <button class="upload-btn"><i class="fas fa-upload mr-2"></i>อัปโหลดรูปโปรไฟล์</button>
+                        <input type="file" id="edit-image" accept="image/*">
+                    </div>
+                    <div id="upload-status" class="loading-text">
+                        <i class="fas fa-circle-notch fa-spin mr-2"></i>
+                        <span>กำลังอัปโหลด...</span>
+                    </div>
                 </div>
             </div>
             
@@ -408,7 +459,7 @@
         <div class="modal-box">
             <i class="fas fa-check-circle modal-icon"></i>
             <h2 class="modal-title">อัปเดตข้อมูลสำเร็จ!</h2>
-            <p class="modal-text">ข้อมูลของคุณถูกบันทึกเรียบร้อยแล้ว</p>
+            <p class="modal-text">ระบบแก้ไขข้อมูลเป็นปัจจุบันแล้วค่ะ</p>
             <div class="modal-buttons">
                 <button class="modal-btn modal-btn-primary" id="modalCloseBtn">ปิด</button>
             </div>
@@ -431,8 +482,8 @@
     <div class="modal-overlay" id="loadingModal">
         <div class="modal-box">
             <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500 mx-auto mb-4"></div>
-            <h2 class="modal-title">กำลังประมวลผล</h2>
-            <p class="modal-text">กรุณารอสักครู่...</p>
+            <h2 class="modal-title" id="loadingTitle">กำลังประมวลผล</h2>
+            <p class="modal-text" id="loadingText">กรุณารอสักครู่...</p>
         </div>
     </div>
 
@@ -451,6 +502,9 @@
         const modalCloseBtn = document.getElementById('modalCloseBtn');
         const errorCloseBtn = document.getElementById('errorCloseBtn');
         const errorMessage = document.getElementById('errorMessage');
+        const loadingTitle = document.getElementById('loadingTitle');
+        const loadingText = document.getElementById('loadingText');
+        const uploadStatus = document.getElementById('upload-status');
 
         // Modal Event Listeners
         modalCloseBtn.addEventListener('click', () => {
@@ -465,11 +519,22 @@
         window.onload = async () => {
             await initializeLiff(); // เริ่มต้น LIFF และค้นหาข้อมูลทันทีที่ได้ userId
             toggleFormEditing(false); // ล็อกฟอร์มในตอนเริ่มต้นและซ่อนปุ่ม
+            
+            // Event listener for file upload
+            document.getElementById('edit-image').addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    handleImageUpload(e.target.files[0]);
+                }
+            });
         };
 
         // ฟังก์ชันสำหรับเริ่มต้น LIFF
         async function initializeLiff() {
             try {
+                loadingTitle.textContent = "กำลังเชื่อมต่อกับ LINE";
+                loadingText.textContent = "กรุณารอสักครู่...";
+                loadingModal.classList.add('active');
+                
                 await liff.init({ liffId: `${LIFF_ID}` });
                 if (liff.isLoggedIn()) {
                     const profile = await liff.getProfile();
@@ -481,11 +546,15 @@
             } catch (error) {
                 console.error('LIFF Initialization failed', error);
                 showError('เกิดข้อผิดพลาดในการเชื่อมต่อ LINE');
+            } finally {
+                loadingModal.classList.remove('active');
             }
         }
 
         // ฟังก์ชันค้นหาข้อมูลตาม userlineId
         async function searchDataByUserlineId(userlineId) {
+            loadingTitle.textContent = "กำลังประมวลผล";
+            loadingText.textContent = "เชื่อมต่อ API สำเร็จ ระบบกำลังแสดงข้อมูลของคุณ...";
             loadingModal.classList.add('active');
             
             try {
@@ -504,7 +573,7 @@
                     document.getElementById('edit-name').value = filteredData[2];
                     document.getElementById('edit-employeeID').value = filteredData[3];
                     document.getElementById('edit-department').value = filteredData[4];
-                    document.getElementById('edit-imageUrl').value = filteredData[5];
+                    document.getElementById('edit-imageUrl').value = filteredData[5] || "";
 
                     updateImagePreview(); // อัปเดตการแสดงผลของรูปภาพ
                 } else {
@@ -573,6 +642,8 @@
                 return;
             }
 
+            loadingTitle.textContent = "กำลังตรวจสอบข้อมูล";
+            loadingText.textContent = "โปรดรอสักครู่...";
             loadingModal.classList.add('active');
 
             try {
@@ -586,7 +657,10 @@
 
                 if (result && result.includes('Data updated')) {
                     successModal.classList.add('active');
-                    await initializeLiff(); // อัปเดตข้อมูลในฟอร์มหลังจากบันทึกข้อมูลสำเร็จ
+                    // อัปเดตข้อมูลในฟอร์มหลังจากบันทึกข้อมูลสำเร็จ
+                    loadingTitle.textContent = "กำลังโหลดข้อมูลใหม่";
+                    loadingText.textContent = "ระบบกำลังอัปเดตข้อมูล...";
+                    await searchDataByUserlineId(userID);
                 } else {
                     throw new Error(result || 'Failed to save data');
                 }
@@ -607,7 +681,7 @@
             document.getElementById('edit-name').value = latestData[2];
             document.getElementById('edit-employeeID').value = latestData[3];
             document.getElementById('edit-department').value = latestData[4];
-            document.getElementById('edit-imageUrl').value = latestData[5];
+            document.getElementById('edit-imageUrl').value = latestData[5] || "";
 
             updateImagePreview();
             toggleFormEditing(false);
@@ -639,6 +713,22 @@
         function showError(message) {
             errorMessage.textContent = message;
             errorModal.classList.add('active');
+        }
+
+        // Handle image upload
+        async function handleImageUpload(file) {
+            uploadStatus.classList.add('active');
+            
+            try {
+                const base64Image = await getBase64(file);
+                document.getElementById('edit-imageUrl').value = base64Image;
+                updateImagePreview();
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                showError('เกิดข้อผิดพลาดขณะอัปโหลดรูปภาพ');
+            } finally {
+                uploadStatus.classList.remove('active');
+            }
         }
     </script>
 </body>
