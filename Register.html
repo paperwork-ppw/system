@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ลงทะเบียน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <!-- Fontawesome CDN Link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"/>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+        
+        :root {
+            --primary-color: #FF5F1F;
+            --primary-light: #FF8C42;
+            --primary-dark: #E64900;
+            --secondary-color: #FFD166;
+            --dark-color: #2F2F2F;
+            --light-color: #FFF8F0;
+        }
+        
+        body {
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(135deg, var(--light-color) 0%, #FFEDE1 100%);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .modal-box {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+        
+        .modal-icon {
+            font-size: 70px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+        
+        .modal-text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-btn-primary {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .modal-btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .modal-btn-secondary {
+            background: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .modal-btn-secondary:hover {
+            background: #FFF0E6;
+        }
+        
+        .shadow-inset {
+            box-shadow: inset 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 95, 31, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 95, 31, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #FFF0E6;
+            transform: translateY(-2px);
+        }
+        
+        .input-field:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(255, 95, 31, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full">
+        <form>
+            <div class="bg-white rounded-xl p-8 shadow-lg border border-orange-50">    
+                <div class="mb-6 text-center">
+                    <h1 class="text-2xl font-bold text-gray-800 mb-2">ลงทะเบียนสมาชิก</h1>
+                    <p class="text-gray-600 text-sm">กรุณากรอกข้อมูลให้ครบถ้วน</p>
+                </div>
+                
+                <div class="mb-6 text-center">
+                    <div class="mx-auto w-32 h-32 mb-4 border-2 border-dashed border-orange-200 rounded-full relative bg-orange-50 shadow-inset overflow-hidden">
+                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Default Image" id="preview" class="h-full w-full object-cover">
+                    </div>
+                    <label for="file" class="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-white bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-md">
+                        <i class="fas fa-camera"></i>
+                        อัพโหลดรูป
+                        <input type="file" id="file" name="file" accept="image/*" class="hidden">
+                    </label>
+                    <div class="mx-auto w-48 text-orange-400 text-xs text-center mt-2">คลิกเพื่ออัพโหลดรูปของคุณ</div>
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div>
+                        <input type="text" class="input-field w-full bg-orange-50 p-3 text-gray-700 text-sm text-center rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-300" id="userlineId" placeholder="Line ID" name="userlineId">
+                    </div>
+                    <div>
+                        <input type="text" class="input-field w-full border border-orange-200 p-3 text-md rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-300" id="nameId" placeholder="ชื่อ นามสกุล" name="nameId" required>
+                    </div>
+                    <div>
+                        <input type="email" class="input-field w-full border border-orange-200 p-3 text-md rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-300" id="keynumberId" placeholder="Gmail ที่ติดต่อได้" name="keynumberId" required>
+                    </div>
+                    <div>
+                        <input type="number" class="input-field w-full border border-orange-200 p-3 text-md rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-300" id="keynumber2Id" placeholder="หมายเลขโทรศัพท์" name="keynumber2Id" required>
+                    </div>
+                </div>
+                
+                <button type="button" id="submitBtn" class="btn-primary text-center w-full text-white py-3 px-4 rounded-lg mt-6">
+                    <i class="fas fa-save mr-2"></i>บันทึกข้อมูล
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal Success -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-box">
+            <i class="fas fa-check-circle modal-icon"></i>
+            <h2 class="modal-title">ลงทะเบียนสำเร็จ!</h2>
+            <p class="modal-text">ข้อมูลของคุณถูกบันทึกเรียบร้อยแล้ว</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-primary" id="modalCloseBtn">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Error -->
+    <div class="modal-overlay" id="errorModal">
+        <div class="modal-box">
+            <i class="fas fa-exclamation-circle modal-icon" style="color: #ef4444;"></i>
+            <h2 class="modal-title">เกิดข้อผิดพลาด</h2>
+            <p class="modal-text" id="errorMessage">กรุณากรอกข้อมูลในช่องที่จำเป็น</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-primary" id="errorCloseBtn">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmation -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-box">
+            <i class="fas fa-question-circle modal-icon" style="color: var(--primary-color);"></i>
+            <h2 class="modal-title">ยืนยันการส่งข้อมูล</h2>
+            <p class="modal-text">คุณแน่ใจว่าต้องการส่งข้อมูลนี้หรือไม่?</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-secondary" id="confirmCancelBtn">ยกเลิก</button>
+                <button class="modal-btn modal-btn-primary" id="confirmSubmitBtn">ยืนยัน</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Loading -->
+    <div class="modal-overlay" id="loadingModal">
+        <div class="modal-box">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500 mx-auto mb-4"></div>
+            <h2 class="modal-title">กำลังประมวลผล</h2>
+            <p class="modal-text">กรุณารอสักครู่...</p>
+        </div>
+    </div>
+
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+    // ลิ้งจาก ระบบสมาชิก
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzJ-iyq6R3aC5Wr44Xj8ytT13ZnP8AfrjLuUYYBnx4b1RHzLeKfwpYNP1l7D3OTz-HtnA/exec'; 
+    // Liff ไอดีไล์เรียกใช้หน้าข้อมูลส่วนตัว
+    const LIFF_ID = '2007510868-PBm4aJwy'; // LIFF ID
+
+    // ฟังก์ชันเริ่มต้น LIFF SDK
+    window.onload = function () {
+        initializeLiff();
+    };
+
+    // ฟังก์ชันสำหรับเริ่มต้น LIFF SDK
+    async function initializeLiff() {
+        await liff.init({ liffId: `${LIFF_ID}` });
+
+        if (liff.isLoggedIn()) {
+            getUserProfile();
+        } else {
+            liff.login();
+        }
+    }
+
+    // ฟังก์ชันสำหรับดึงข้อมูลโปรไฟล์ของผู้ใช้
+    async function getUserProfile() {
+        try {
+            const profile = await liff.getProfile();
+            document.getElementById('userlineId').value = profile.userId;
+        } catch (error) {
+            console.error('เกิดข้อผิดพลาดในการดึงข้อมูลโปรไฟล์:', error);
+        }
+    }
+
+    // ฟังก์ชันสำหรับส่งข้อความ Flex
+    async function sendFlexMessage() {
+        const flexMessage = {
+            type: 'flex',
+            altText: 'ลงทะเบียนเรียบร้อย',
+            contents: {
+                type: 'bubble',
+                styles: {
+                    header: {
+                        backgroundColor: '#f0f0f0'
+                    },
+                    footer: {
+                        backgroundColor: '#f0f0f0'
+                    },
+                    body: {
+                        backgroundColor: '#ffffff'
+                    }
+                },
+                header: {
+                    type: 'box',
+                    layout: 'vertical',
+                    contents: [
+                        {
+                            type: 'text',
+                            text: 'ข้อมูลลงทะเบียนสำเร็จ',
+                            weight: 'bold',
+                            size: 'lg',
+                            color: '#000000',
+                            align: 'center'
+                        }
+                    ]
+                },
+                body: {
+                    type: 'box',
+                    layout: 'vertical',
+                    contents: [
+                        {
+                            type: 'box',
+                            layout: 'vertical',
+                            margin: 'lg',
+                            spacing: 'sm',
+                            contents: [
+                                {
+                                    type: 'box',
+                                    layout: 'horizontal',
+                                    contents: [
+                                        {
+                                            type: 'text',
+                                            text: 'ชื่อ-สกุล',
+                                            size: 'sm',
+                                            color: '#555555',
+                                            flex: 1
+                                        },
+                                        {
+                                            type: 'text',
+                                            text: document.getElementById('nameId').value,
+                                            size: 'sm',
+                                            color: '#111111',
+                                            align: 'end',
+                                            flex: 2
+                                        }
+                                    ]
+                                },
+                                {
+                                    type: 'box',
+                                    layout: 'horizontal',
+                                    contents: [
+                                        {
+                                            type: 'text',
+                                            text: 'รหัสพนักงาน',
+                                            size: 'sm',
+                                            color: '#555555',
+                                            flex: 1
+                                        },
+                                        {
+                                            type: 'text',
+                                            text: document.getElementById('keynumberId').value,
+                                            size: 'sm',
+                                            color: '#111111',
+                                            align: 'end',
+                                            flex: 2
+                                        }
+                                    ]
+                                },
+                                {
+                                    type: 'box',
+                                    layout: 'horizontal',
+                                    contents: [
+                                        {
+                                            type: 'text',
+                                            text: 'อีเมล',
+                                            size: 'sm',
+                                            color: '#555555',
+                                            flex: 1
+                                        },
+                                        {
+                                            type: 'text',
+                                            text: document.getElementById('keynumber2Id').value,
+                                            size: 'sm',
+                                            color: '#111111',
+                                            align: 'end',
+                                            flex: 2
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                footer: {
+                    type: 'box',
+                    layout: 'vertical',
+                    contents: [
+                        {
+                            type: 'text',
+                            text: 'ยินดีต้อนรับ!',
+                            size: 'sm',
+                            color: '#aaaaaa',
+                            align: 'center'
+                        }
+                    ]
+                }
+            }
+        };
+
+        await liff.sendMessages([flexMessage]);
+    }
+
+    // DOM Elements
+    let url = `${WEB_APP_URL}`;
+    let fileInput = document.getElementById("file");
+    let imgPreview = document.getElementById("preview");
+    let userlineIdInput = document.getElementById("userlineId");
+    let nameIdInput = document.getElementById("nameId");
+    let keynumberIdInput = document.getElementById("keynumberId");
+    let keynumber2IdInput = document.getElementById("keynumber2Id");
+    let submitBtn = document.getElementById("submitBtn");
+    
+    // Modal Elements
+    const successModal = document.getElementById('successModal');
+    const errorModal = document.getElementById('errorModal');
+    const confirmModal = document.getElementById('confirmModal');
+    const loadingModal = document.getElementById('loadingModal');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const errorCloseBtn = document.getElementById('errorCloseBtn');
+    const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+    const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Modal Event Listeners
+    modalCloseBtn.addEventListener('click', () => {
+        successModal.classList.remove('active');
+        liff.closeWindow();
+    });
+
+    errorCloseBtn.addEventListener('click', () => {
+        errorModal.classList.remove('active');
+    });
+
+    confirmCancelBtn.addEventListener('click', () => {
+        confirmModal.classList.remove('active');
+    });
+
+    confirmSubmitBtn.addEventListener('click', async () => {
+        confirmModal.classList.remove('active');
+        await submitForm();
+    });
+
+    // ฟังก์ชันสำหรับแปลงไฟล์เป็น Base64
+    function getBase64(file) {
+        return new Promise((resolve, reject) => {
+            let reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = error => reject(error);
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // ฟังก์ชันสำหรับแสดงภาพตัวอย่าง
+    function previewImage() {
+        if (fileInput.files.length > 0) {
+            let file = fileInput.files[0];
+            let reader = new FileReader();
+
+            reader.onload = function(e) {
+                imgPreview.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        } else {
+            imgPreview.src = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+        }
+    }
+
+    // เพิ่ม event listener สำหรับการเปลี่ยนแปลงใน input file
+    fileInput.addEventListener('change', () => {
+        previewImage();
+    });
+
+    // ฟังก์ชันสำหรับตรวจสอบการกรอกข้อมูลในฟิลด์ที่จำเป็น
+    function validateForm() {
+        const userlineId = userlineIdInput.value.trim();
+        const nameId = nameIdInput.value.trim();
+        const keynumberId = keynumberIdInput.value.trim();
+        const keynumber2Id = keynumber2IdInput.value.trim();
+
+        if (userlineId === '') {
+            showError('กรุณากรอก Line ID');
+            return false;
+        }
+
+        if (nameId === '') {
+            showError('กรุณากรอกชื่อและนามสกุล');
+            return false;
+        }
+
+        if (keynumberId === '') {
+            showError('กรุณากรอกอีเมล');
+            return false;
+        }
+
+        if (keynumber2Id === '') {
+            showError('กรุณากรอกหมายเลขโทรศัพท์');
+            return false;
+        }
+
+        return true;
+    }
+
+    // ฟังก์ชันแสดงข้อผิดพลาด
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorModal.classList.add('active');
+    }
+
+    // ฟังก์ชันส่งแบบฟอร์ม
+    async function submitForm() {
+        submitBtn.disabled = true;
+        loadingModal.classList.add('active');
+
+        try {
+            let obj;
+
+            if (fileInput.files.length > 0) {
+                let file = fileInput.files[0];
+                let base64 = await getBase64(file);
+                imgPreview.src = `data:${file.type};base64,${base64}`;
+
+                obj = {
+                    base64: base64,
+                    type: file.type,
+                    name: file.name,
+                    userlineId: userlineIdInput.value,
+                    nameId: nameIdInput.value,
+                    keynumberId: keynumberIdInput.value,
+                    keynumber2Id: keynumber2IdInput.value
+                };
+            } else {
+                let response = await fetch("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png");
+                let blob = await response.blob();
+                let base64 = await getBase64(blob);
+                
+                obj = {
+                    base64: base64,
+                    type: "image/png",
+                    name: "Avatar.png",
+                    userlineId: userlineIdInput.value,
+                    nameId: nameIdInput.value,
+                    keynumberId: keynumberIdInput.value,
+                    keynumber2Id: keynumber2IdInput.value
+                };
+            }
+
+            let response = await fetch(url, {
+                method: "POST",
+                body: JSON.stringify(obj)
+            });
+
+            let data = await response.text();
+            
+            loadingModal.classList.remove('active');
+            successModal.classList.add('active');
+            sendFlexMessage();
+            console.log(data);
+        } catch (error) {
+            loadingModal.classList.remove('active');
+            showError('เกิดข้อผิดพลาดขณะส่งข้อมูล');
+            console.error(error);
+        } finally {
+            submitBtn.disabled = false;
+        }
+    }
+
+    // เพิ่ม event listener สำหรับปุ่มบันทึกข้อมูล
+    submitBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+
+        confirmModal.classList.add('active');
+    });
+</script>
+</body>
+</html>
