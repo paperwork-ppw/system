@@ -164,6 +164,191 @@
             border: 2px dashed rgba(255, 95, 31, 0.3);
             background: rgba(255, 95, 31, 0.05);
         }
+/* สไตล์พื้นฐานสำหรับอัพโหลดไฟล์ */
+.file-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.file-upload-label {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 300px;
+  height: 200px;
+  border: 2px dashed #FF8C42;
+  border-radius: 16px;
+  background-color: rgba(255, 140, 66, 0.05);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.file-upload-label:hover {
+  border-color: #FF5F1F;
+  background-color: rgba(255, 140, 66, 0.1);
+  transform: translateY(-2px);
+}
+
+.file-upload-label.drag-over {
+  border-color: #E64900;
+  background-color: rgba(230, 73, 0, 0.1);
+}
+
+.file-upload-icon {
+  font-size: 48px;
+  color: #FF5F1F;
+  margin-bottom: 12px;
+}
+
+.file-upload-text {
+  text-align: center;
+  color: #FF5F1F;
+  font-weight: 500;
+}
+
+.file-upload-text span {
+  font-size: 14px;
+  color: #FF8C42;
+  display: block;
+  margin-top: 8px;
+}
+
+.file-upload-input {
+  display: none;
+}
+
+.file-upload-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+.file-upload-label.has-file .file-upload-preview {
+  display: block;
+}
+
+.file-upload-label.has-file .file-upload-icon,
+.file-upload-label.has-file .file-upload-text {
+  display: none;
+}
+
+.file-upload-button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #FF5F1F 0%, #FF8C42 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 95, 31, 0.3);
+}
+
+.file-upload-button:hover {
+  background: linear-gradient(135deg, #E64900 0%, #FF5F1F 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 95, 31, 0.4);
+}
+
+.file-info {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #FF5F1F;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-info i {
+  font-size: 18px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: #f0f0f0;
+  border-radius: 3px;
+  margin-top: 10px;
+  overflow: hidden;
+  display: none;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FF8C42, #FF5F1F);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* สไตล์สำหรับอัพโหลดไฟล์แบบเล็ก */
+.file-upload-sm {
+  max-width: 150px;
+  height: 150px;
+}
+
+.file-upload-sm .file-upload-icon {
+  font-size: 36px;
+}
+
+.file-upload-sm .file-upload-text {
+  font-size: 14px;
+}
+
+.file-upload-sm .file-upload-text span {
+  font-size: 12px;
+}
+
+/* สไตล์สำหรับอัพโหลดหลายไฟล์ */
+.multi-file-upload {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.file-item {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.file-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.file-item-remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FF5F1F;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.file-item:hover .file-item-remove {
+  opacity: 1;
+}
     </style>
 </head>
 
